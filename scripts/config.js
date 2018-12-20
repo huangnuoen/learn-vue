@@ -170,6 +170,7 @@ const builds = {
 
 function genConfig (name) {
   const opts = builds[name]
+  // 转换成rollup打包所对应的配置结构
   const config = {
     input: opts.entry,
     external: opts.external,
@@ -214,5 +215,6 @@ if (process.env.TARGET) {
   module.exports = genConfig(process.env.TARGET)
 } else {
   exports.getBuild = genConfig
+  // 返回config组成的数组
   exports.getAllBuilds = () => Object.keys(builds).map(genConfig)
 }

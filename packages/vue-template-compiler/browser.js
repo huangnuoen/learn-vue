@@ -923,7 +923,7 @@
         ? vm.options
         : vm._isVue
           ? vm.$options || vm.constructor.options
-          : vm || {};
+          : vm;
       var name = options.name || options._componentTag;
       var file = options.__file;
       if (!name && file) {
@@ -1012,9 +1012,9 @@
     }
   };
 
-  // the current target watcher being evaluated.
-  // this is globally unique because there could be only one
-  // watcher being evaluated at any time.
+  // The current target watcher being evaluated.
+  // This is globally unique because only one watcher
+  // can be evaluated at a time.
   Dep.target = null;
 
   /*  */
@@ -5061,7 +5061,11 @@
       } else if (c.type === 2) {
         segments.push({ type: INTERPOLATION, value: c.expression });
       } else if (c.type === 3) {
-        segments.push({ type: RAW, value: escape(c.text) });
+        var text = escape(c.text);
+        if (c.isComment) {
+          text = '<!--' + text + '-->';
+        }
+        segments.push({ type: RAW, value: text });
       }
     }
     return segments

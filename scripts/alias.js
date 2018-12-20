@@ -1,4 +1,5 @@
 const path = require('path')
+
 /* path.resolve是node.js提供的路径解析方法
  * path.resolve(当前目录即scripts, '../', 'src/platforms/web')
  * 当前目录scripts拼接上一级即是根目录

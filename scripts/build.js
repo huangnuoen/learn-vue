@@ -7,10 +7,11 @@ const terser = require('terser')
 if (!fs.existsSync('dist')) {
   fs.mkdirSync('dist')
 }
-// 拿到所有构建的path
+// 拿到所有构建的path数组
 let builds = require('./config').getAllBuilds()
 
 // filter builds via command line arg
+// 对应npm run 后面的参数
 if (process.argv[2]) {
   const filters = process.argv[2].split(',')
   builds = builds.filter(b => {
