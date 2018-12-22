@@ -111,6 +111,7 @@ function initProps (vm: Component, propsOptions: Object) {
 
 function initData (vm: Component) {
   let data = vm.$options.data
+  // 判断是否为function
   data = vm._data = typeof data === 'function'
     ? getData(data, vm)
     : data || {}

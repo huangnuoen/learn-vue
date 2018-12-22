@@ -66,6 +66,7 @@ export function initMixin (Vue: Class<Component>) {
     }
 
     if (vm.$options.el) {
+      // 将el转化成dom对象
       vm.$mount(vm.$options.el)
     }
   }
