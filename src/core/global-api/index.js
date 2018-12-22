@@ -33,6 +33,7 @@ export function initGlobalAPI (Vue: GlobalAPI) {
   // exposed util methods.
   // NOTE: these are not considered part of the public API - avoid relying on
   // them unless you are aware of the risk.
+  // 定义了util方法 不建议外部库使用 使用有风险
   Vue.util = {
     warn,
     extend,
@@ -53,8 +54,10 @@ export function initGlobalAPI (Vue: GlobalAPI) {
   // components with in Weex's multi-instance scenarios.
   Vue.options._base = Vue
 
+  // 把builtInComponents扩展到Vue.options.components下
   extend(Vue.options.components, builtInComponents)
 
+  // 创建vue.use的全局方法
   initUse(Vue)
   initMixin(Vue)
   initExtend(Vue)
