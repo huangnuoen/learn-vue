@@ -23,6 +23,7 @@ let uid = 0
  * and fires callback when the expression value changes.
  * This is used for both the $watch() api and directives.
  */
+// 渲染watcher 观察者模式
 export default class Watcher {
   vm: Component;
   expression: string;
@@ -47,11 +48,12 @@ export default class Watcher {
     expOrFn: string | Function,
     cb: Function,
     options?: ?Object,
-    isRenderWatcher?: boolean
+    isRenderWatcher?: boolean 
   ) {
     this.vm = vm
     if (isRenderWatcher) {
-      vm._watcher = this
+      // 往vm上加_watcher
+      vm._watcher = this 
     }
     vm._watchers.push(this)
     // options
