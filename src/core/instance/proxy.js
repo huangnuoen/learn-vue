@@ -34,6 +34,7 @@ if (process.env.NODE_ENV !== 'production') {
     )
   }
 
+  // 判断当前浏览器是否支持Proxy 
   const hasProxy =
     typeof Proxy !== 'undefined' && isNative(Proxy)
 
@@ -52,11 +53,13 @@ if (process.env.NODE_ENV !== 'production') {
     })
   }
 
+  // 判断对象是否有某个属性
   const hasHandler = {
     has (target, key) {
       const has = key in target
       const isAllowed = allowedGlobals(key) ||
         (typeof key === 'string' && key.charAt(0) === '_' && !(key in target.$data))
+      // 没有该属性发起警告
       if (!has && !isAllowed) {
         if (key in target.$data) warnReservedPrefix(target, key)
         else warnNonPresent(target, key)
@@ -82,6 +85,8 @@ if (process.env.NODE_ENV !== 'production') {
       const handlers = options.render && options.render._withStripped
         ? getHandler
         : hasHandler
+
+      // 对vm对一层拦截处理
       vm._renderProxy = new Proxy(vm, handlers)
     } else {
       vm._renderProxy = vm

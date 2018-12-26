@@ -43,6 +43,7 @@ export function initMixin (Vue: Class<Component>) {
     }
     /* istanbul ignore else */
     if (process.env.NODE_ENV !== 'production') {
+      // 对vm对一层拦截处理，当使用vm上没有的属性时将告警      
       initProxy(vm)
     } else {
       vm._renderProxy = vm
