@@ -190,10 +190,12 @@ export function createPatchFunction (backend) {
           insert(parentElm, vnode.elm, refElm)
         }
       } else {
+        // 创建子节点
         createChildren(vnode, children, insertedVnodeQueue)
         if (isDef(data)) {
           invokeCreateHooks(vnode, insertedVnodeQueue)
         }
+        // 父节点，当前节点，参考节点
         insert(parentElm, vnode.elm, refElm)
       }
 
@@ -288,10 +290,12 @@ export function createPatchFunction (backend) {
       if (process.env.NODE_ENV !== 'production') {
         checkDuplicateKeys(children)
       }
+      // 遍历子节点，创建dom
       for (let i = 0; i < children.length; ++i) {
         createElm(children[i], insertedVnodeQueue, vnode.elm, null, true, children, i)
       }
     } else if (isPrimitive(vnode.text)) {
+      // 子节点是基础类型，直接添加到父节点
       nodeOps.appendChild(vnode.elm, nodeOps.createTextNode(String(vnode.text)))
     }
   }

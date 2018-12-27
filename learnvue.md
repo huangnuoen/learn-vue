@@ -47,5 +47,5 @@
 - 核心是调用`vm.__patch__`
 #### __patch__
 1. `const patch: Function = createPatchFunction({ nodeOps, modules })` 柯里化
-2. `createElm` 创建真实dom
+2. `createElm` 创建真实dom，children通过`createChildren`创建子节点
 
