@@ -1,5 +1,7 @@
 /* @flow */
 
+// 定义了一些实际dom操作
+
 import { namespaceMap } from 'web/util/index'
 
 export function createElement (tagName: string, vnode: VNode): Element {

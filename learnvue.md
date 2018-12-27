@@ -42,4 +42,10 @@
 2. 对`children`作`normalize`处理，分2种，普通处理和简单处理，最后把`children`变成`vnode`一维数组
 3. `createElement`作为render参数传入，调用render(),即调用`createElement`生成`vnode`，返回到`vm._update(vm._render)`
 
+### vm._update
+- 首次渲染和数据更新时时会调用
+- 核心是调用`vm.__patch__`
+#### __patch__
+1. `const patch: Function = createPatchFunction({ nodeOps, modules })` 柯里化
+2. `createElm` 创建真实dom
 

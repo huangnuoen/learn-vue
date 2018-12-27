@@ -82,6 +82,7 @@ export function createPatchFunction (backend) {
     }
   }
 
+  // 把真实dom转化成vnode
   function emptyNodeAt (elm) {
     return new VNode(nodeOps.tagName(elm).toLowerCase(), {}, [], undefined, elm)
   }
@@ -122,6 +123,7 @@ export function createPatchFunction (backend) {
 
   let creatingElmInVPre = 0
 
+  // 把vnode挂载到真实dom上
   function createElm (
     vnode,
     insertedVnodeQueue,
