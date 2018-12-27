@@ -76,7 +76,7 @@ export function renderMixin (Vue: Class<Component>) {
     try {
       // _renderProxy生产环境下是vm
       // 开发环境可能是proxy对象
-      vnode = render.call(vm._renderProxy, vm.$createElement)
+      vnode = render.call(vm._renderProxy, vm.$createElement) // 近似vm.render(createElement)
     } catch (e) {
       handleError(e, vm, `render`)
       // return error render result,
