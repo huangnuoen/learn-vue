@@ -123,7 +123,7 @@ export function createPatchFunction (backend) {
 
   let creatingElmInVPre = 0
 
-  // 把vnode挂载到真实dom上
+  // 把vnode挂载到真实dom上,把vnode.elm插入到对应parentelm,包括vode.children
   function createElm (
     vnode,
     insertedVnodeQueue,
@@ -195,17 +195,17 @@ export function createPatchFunction (backend) {
         if (isDef(data)) {
           invokeCreateHooks(vnode, insertedVnodeQueue)
         }
-        // 父节点，当前节点，参考节点
+        // 插入对应节点， 父节点，当前节点，参考节点
         insert(parentElm, vnode.elm, refElm)
       }
 
       if (process.env.NODE_ENV !== 'production' && data && data.pre) {
         creatingElmInVPre--
       }
-    } else if (isTrue(vnode.isComment)) {
+    } else if (isTrue(vnode.isComment)) {// 注释节点
       vnode.elm = nodeOps.createComment(vnode.text)
       insert(parentElm, vnode.elm, refElm)
-    } else {
+    } else {// 文本节点
       vnode.elm = nodeOps.createTextNode(vnode.text)
       insert(parentElm, vnode.elm, refElm)
     }
@@ -290,7 +290,7 @@ export function createPatchFunction (backend) {
       if (process.env.NODE_ENV !== 'production') {
         checkDuplicateKeys(children)
       }
-      // 遍历子节点，创建dom
+      // 遍历子节点，创建dom，递归调用createElm
       for (let i = 0; i < children.length; ++i) {
         createElm(children[i], insertedVnodeQueue, vnode.elm, null, true, children, i)
       }
@@ -802,7 +802,7 @@ export function createPatchFunction (backend) {
         }
       }
     }
-
+    // 调用钩子函数
     invokeInsertHook(vnode, insertedVnodeQueue, isInitialPatch)
     return vnode.elm
   }
