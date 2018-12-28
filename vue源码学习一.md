@@ -1,12 +1,15 @@
-# vue 源码学习（一）
+# vue 源码学习（一） 目录结构和构建过程简介
 ---
 ## Flow
 
-vue框架使用了Flow作为类型检查，来保证项目的可读性和维护性。在学习源码前可以先看下Flow的语法，了解下,[官方文档](https://flow.org/en/docs/config/)
+vue框架使用了Flow作为类型检查，来保证项目的可读性和维护性。vue.js的主目录下有Flow的配置.flowconfig文件，还有flow目录，指定了各种自定义类型。
 
-vue.js的主目录下有Flow的配置.flowconfig文件，还有flow目录，指定了各种自定义类型
+在学习源码前可以先看下Flow的语法 [官方文档](https://flow.org/en/docs/config/)
 
-## 源码src目录结构 
+
+
+## 目录结构 
+vue.js源码主要在src下
 ```
 src
 ├── compiler        # 编译相关 
@@ -24,9 +27,88 @@ template的编译
 core
 ├── components     # 内置组件
 ├── global-api     # 全局 API 封装 
-├── instance       # Vue 实例化
-├── observer       # 观察者
+├── instance       # Vue 实例化，生命周期
+├── observer       # 观察者，响应式
 ├── util           # 工具函数
-├── vdom           # 虚拟 DOM
+├── vdom           # virtual DOM
 ```
+
+### platform
+存放2个主要入口，分别打包运行在web和weex上的vue.js
+
+### server
+支持了服务端渲染
+
+### sfc
+把.vue文件内容解析成js对象
+
+### shared
+存放共享方法
+
 ## vue.js构建 
+`vue`是基于`Rollup`构建的，类似于`webpack`
+首先来看下`package.json`文件,先看下`script`字段：
+```
+{
+  "script":{
+    "build": "node scripts/build.js",
+    "build:ssr": "npm run build -- web-runtime-cjs,web-server-renderer",
+    "build:weex": "npm run build -- weex",
+  }
+}
+```
+这3条都是构建vue的命令，后2条是根据需求添加对应环境参数。运行`npm run build`时会执行`node scripts/build.js`
+
+### 构建过程
+构建过程比较复杂，这里会简化下构建过程，只分析主线流程
+
+#### 进入到`scripts/build.js`,
+```
+// 从配置文件读取配置，拿到所有构建的path
+let builds = require('./config').getAllBuilds()
+// 过滤builds
+build(builds)
+```
+再看下配置文件`scripts.config.js`,
+```
+let builds= {
+  'web-runtime-esm': {
+    entry: resolve('web/entry-runtime.js'),
+    dest: resolve('dist/vue.runtime.esm.js'),
+    format: 'es',
+    banner
+  },
+}
+```
+`entry` 属性表示构建的入口 JS 文件地址，`dest` 属性表示构建后的 JS 文件地址。`format` 属性表示构建的格式，`cjs` 表示构建出来的文件遵循 CommonJS 规范，`es` 表示构建出来的文件遵循` ES Module` 规范。` umd `表示构建出来的文件遵循 `UMD` 规范。
+
+#### resolve
+看下 `resovle` 方法的定义
+```
+const resolve = p => {
+  const base = p.split('/')[0]
+  if (aliases[base]) {
+    return path.resolve(aliases[base], p.slice(base.length + 1))
+  } else {
+    return path.resolve(__dirname, '../', p)
+  }
+}
+```
+用到了 `path.resolve([... paths])`, `path.resolve` 是 `node.js` 提供的路径解析方法,可以看下[官方文档](https://nodejs.org/docs/latest/api/path.html#path_path_resolve_paths)了解下，主要是从右到左处理给定的路径序列,直到构造出绝对路径.
+
+用`resolve('web/entry-runtime.js')`作分析， `base` 是 `web` , 找到 `aliases[base]` 即真实路径 `'../src/platforms/web'` ,
+
+#### `entry: resolve('web/entry-runtime.js')`
+所以最终入口路径是 `../src/platforms/web/entry-runtime.js`，构建生成文件路径是`../dist/vue.runtime.esm.js`
+
+#### genConfig()
+输入builds前要先将builds转换成rollup打包所对应的配置结构
+```
+if (process.env.TARGET) {
+  module.exports = genConfig(process.env.TARGET)
+} else {
+  exports.getBuild = genConfig
+  // 返回config组成的数组
+  exports.getAllBuilds = () => Object.keys(builds).map(genConfig)
+}
+```
