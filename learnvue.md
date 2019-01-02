@@ -51,3 +51,6 @@
 2. `createElm` 创建真实dom，children通过`createChildren`创建子节点
     - 把vnode.elm插入到对应parentelm,包括vode.children
 
+
+## 组件化
+### create-component
