@@ -125,7 +125,8 @@ export function initState (vm: Component) {
   }
 
   ```
-  定义了一个get/set函数，通过`Object.defineProperty`定义\修改属性，将对target的key访问加了一层get/set,即当访问vm.key时，实际上是调用了sharedPropertyDefinition.get，返回this._data.key。
+  定义了一个get/set函数，通过`Object.defineProperty`定义\修改属性(通过Object.defineProperty()定义属性，通过描述符的设置可以进行更精准的控制对象属性)
+  将对target的key访问加了一层get/set,即当访问vm.key时，实际上是调用了sharedPropertyDefinition.get，返回this._data.key。
 - 最后，`observe(data, true /* asRootData */)` 观察者，对数据作响应式处理，此处先不分析
 
 
