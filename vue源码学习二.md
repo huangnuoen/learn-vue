@@ -176,5 +176,47 @@ Vue.prototype.$mount = function (
 
 `$mount` 第一个参数el, 表示挂载的元素，在浏览器环境会通过query(el)获取到dom对象，第二个参数和服务端渲染相关，不进行深入分析，此处不传。接着调用`mountComponent()`
 
-看下`query()`,比较简单，当el 是string时，找到该选择器返回dom对象，否则新创建个div dom对象，el是dom对象直接返回el
+看下`query()`,比较简单，当el 是string时，找到该选择器返回dom对象，否则新创建个div dom对象，el是dom对象直接返回el.
+
+### mountComponent
+`mountComponent`定义在`src/core/instance/lifecycle.js`中，传入`vm,el`, 
+
+- 将`el`缓存在`vm.$el`上
+- 判断有没有`render`方法，没有则直接把createEmptyVNode作为`render`函数 
+- 开发环境警告（没有`Render`但有`el/template`不能使用`runtime-only`版本、`render`和`template`必须要有一个）
+- 挂载`beforeMount`钩子
+- 定义 `updateComponent` , 渲染相关
+  ```
+  updateComponent = () => {
+    vm._update(vm._render(), hydrating)
+  }
+  ```
+- `new Watcher()` 实例化一个渲染watcher,简单看下定义,
+  ``` this.getter = expOrFn  ```
+  把`updateComponent`挂载到`this.getter`上
+  `this.value = this.lazy ? undefined : this.get()`
+  ```
+  get () {
+    pushTarget(this)
+    let value
+    const vm = this.vm
+    try {
+      value = this.getter.call(vm, vm)
+    } catch (e) {...}
+    return value
+  }
+  ```
+  执行this.get()，则执行了this.getter,即`updateComponent`,所以new Watcher()时会执行`updateComponent`,也就会执行到`vm._update、vm._render`方法。
+
+  因为之后不止初始化时需要渲染页面，数据发生变化时也是要更新到dom上的，实例watcher可以实现对数据进行监听以及随后的更新dom处理，watcher会在初始化执行回调，也会在数据变化时执行回调，此处先简单介绍为什么要使用watcher,不深入分析watcher实现原理。
+- 最后判断有无根节点，无则表示首次挂载，添加`mounted`钩子函数 ，返回vm
+
+## 总结
+
+实例初始化：new Vue()->挂载方法属性->this._init->初始化data->$mount
+
+挂载过程:(在complier版本，生成render函数)对el作处理，执行`mountComponent`,`mountComponent`中定义了`updateComponent`,通过实例化watcher的回调执行`updateComponent`,执行`updateComponent`，即调用了`vm._update、vm._render`真实渲染成dom对象。
+
+
+
 
