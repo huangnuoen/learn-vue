@@ -134,6 +134,8 @@ export function initState (vm: Component) {
 
 接下来将会分析下` vue `是如何把javaScript对象渲染成`dom`元素的，和之前一样，主要分析主线代码
 
+### 预处理
+
 还是从`src/platform/web/entry-runtime-with-compiler.js` 文件入手，
 ```
 const mount = Vue.prototype.$mount
@@ -146,6 +148,33 @@ Vue.prototype.$mount = function (
 }
 ```
 首先将原先原型上的`$mount`方法缓存起来，再重新定义`$mount`：
-### - 先判断 `el` ，`el` 不能是 `body, html` ，因为渲染出来的 `DOM `最后是会替换掉`el`的
-### - 判断`render`方法,
-> Vue 选项中的 render 函数若存在，则 Vue 构造函数不会从 template 选项或通过 el 选项指定的挂载元素中提取出的 HTML 模板编译渲染函数。
+- 先判断 `el` ，`el` 不能是 `body, html` ，因为渲染出来的 `DOM `最后是会替换掉`el`的
+- 判断`render`方法, 有的话直接调用`mount.call(this, el, hydrating)`
+- 没有`render`方法时：
+1. 判断有没有`template` ，有则用`compileToFunctions`将其编译成render方法
+2. 没有`template`时，则查看有没有`el`,有转换成`template`，再用`compileToFunctions`将其编译成`render`方法
+3. 将`render`挂载到options下
+4. 最后调用 `mount.call(this, el, hydrating)`,即是调用原先原型上的mount方法
+
+我们发现这一系列调用都是为了生成`render`函数，说明在`vue`中，所有的组件渲染最终都需要`render`方法（不管是单文件.vue还是el\template），`vue` 文档里也提到：
+> `Vue` 选项中的 render 函数若存在，则 `Vue` 构造函数不会从 `template` 选项或通过 el 选项指定的挂载元素中提取出的 `HTML` 模板编译渲染函数。
+
+
+### 原先原型上的mount方法
+找到原先原型上的mount方法，在`src/platform/web/runtime/index.js`中:
+```
+// public mount method
+Vue.prototype.$mount = function (
+  el?: string | Element,
+  hydrating?: boolean
+): Component {
+  el = el && inBrowser ? query(el) : undefined
+  return mountComponent(this, el, hydrating)
+}
+```
+这个是公用的$mount方法，这么设计使得这个方法可以被 `runtime only`和`runtime+compiler` 版本共同使用
+
+`$mount` 第一个参数el, 表示挂载的元素，在浏览器环境会通过query(el)获取到dom对象，第二个参数和服务端渲染相关，不进行深入分析，此处不传。接着调用`mountComponent()`
+
+看下`query()`,比较简单，当el 是string时，找到该选择器返回dom对象，否则新创建个div dom对象，el是dom对象直接返回el
+
