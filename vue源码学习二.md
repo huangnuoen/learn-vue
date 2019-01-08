@@ -1,8 +1,8 @@
 # vue 源码学习二 实例初始化和挂载过程
 
 ## vue 入口
-使用vue，都要先 `new Vue()` ，说明Vue 应该是个构造函数。
-从vue的构建过程可以知道，web环境下，入口文件在 `src/platforms/web/entry-runtime-with-compiler.js`（以Runtime + Compiler模式构建）
+
+从vue的构建过程可以知道，web环境下，入口文件在 `src/platforms/web/entry-runtime-with-compiler.js`（以Runtime + Compiler模式构建，vue直接运行在浏览器进行编译工作）
 ```
 import Vue from './runtime/index'
 ```
@@ -82,8 +82,8 @@ function Vue (options) {
 
 一开始在`this`对象上定义`_uid、_isVue`,判断`options._isComponent`，此次先不考虑`options._isComponent`为`true`的情况，走`else`，合并`options`，接着安装`proxy`, 初始化生命周期，初始化事件、初始化渲染、初始化data、钩子函数等，最后判断有`vm.$options.el`则执行`vm.$mount()`,即是把`el`渲染成最终的`DOM`。
 
-### 初始化data 数据绑定
-_init()中通过initState()来绑定数据到vm上，看下initState的定义：
+## 初始化data 数据绑定
+`_init()`中通过`initState()`来绑定数据到vm上，看下`initState`的定义：
 ```
 export function initState (vm: Component) {
   vm._watchers = []
@@ -105,8 +105,8 @@ export function initState (vm: Component) {
 获取options，初始化props、methods、data、计算属性、watch绑定到vm上，先来看下initData()是如何把绑定data的：
 
 - 先判断data是不是function类型，是则调用getData，返回data的自调用，不是则直接返回data,并将data赋值到vm._data上
-- 对data、props、methods，作个校验，防止出现重复的key,因为它们最终都会挂载到vm上
-- 通过```proxy(vm, `_data`, key)```把每个key挂载在vm上
+- 对data、props、methods，作个校验，防止出现重复的key,因为它们最终都会挂载到vm上,都是通过vm.key来调用
+- 通过```proxy(vm, `_data`, key)```把每个`key`都挂载在`vm`上
   ```
   export function proxy (target: Object, sourceKey: string, key: string) {
     sharedPropertyDefinition.get = function proxyGetter () {
@@ -123,17 +123,29 @@ export function initState (vm: Component) {
     get: noop,
     set: noop
   }
-
   ```
-  定义了一个get/set函数，通过`Object.defineProperty`定义\修改属性(通过Object.defineProperty()定义属性，通过描述符的设置可以进行更精准的控制对象属性)
-  将对target的key访问加了一层get/set,即当访问vm.key时，实际上是调用了sharedPropertyDefinition.get，返回this._data.key。
-- 最后，`observe(data, true /* asRootData */)` 观察者，对数据作响应式处理，此处先不分析
 
-
+  `proxy()` 定义了一个`get/set`函数，再通过`Object.defineProperty`定义\修改属性(不了解`Object.defineProperty()`的同学可以先看下[文档](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty)，通过`Object.defineProperty()`定义的属性，通过描述符的设置可以进行更精准的控制对象属性)，将对target的key访问加了一层`get/set`,即当访问`vm.key`时，实际上是调用了`sharedPropertyDefinition.get`，返回`this._data.key`，这样就实现了通过vm.key来调用vm._data上的属性
+- 最后，`observe(data, true /* asRootData */)` 观察者，对数据作响应式处理，这也是vue的核心之一，此处先不分析
 
 
 ## $mount() 实例挂载
-Vue的核心思想之一是数据驱动，在vue下，我们不会直接操作DOM，而是通过js修改数据,所有逻辑只需要考虑对数据的修改，最后再把数据渲染成DOM。其中，$mount()就是负责把数据挂载到vm,再渲染成最终DOM。
+`Vue`的核心思想之一是数据驱动，在`vue`下，我们不会直接操作`DOM`，而是通过js修改数据,所有逻辑只需要考虑对数据的修改，最后再把数据渲染成DOM。其中，`$mount()`就是负责把数据挂载到`vm`,再渲染成最终`DOM`。
 
-接下来将会分析下 vue 是如何把javaScript对象渲染成dom元素的，和之前一样，主要分析主线代码
+接下来将会分析下` vue `是如何把javaScript对象渲染成`dom`元素的，和之前一样，主要分析主线代码
 
+还是从`src/platform/web/entry-runtime-with-compiler.js` 文件入手，
+```
+const mount = Vue.prototype.$mount
+Vue.prototype.$mount = function (
+  el?: string | Element,
+  hydrating?: boolean
+): Component {
+  el = el && query(el)
+  ···
+}
+```
+首先将原先原型上的`$mount`方法缓存起来，再重新定义`$mount`：
+### - 先判断 `el` ，`el` 不能是 `body, html` ，因为渲染出来的 `DOM `最后是会替换掉`el`的
+### - 判断`render`方法,
+> Vue 选项中的 render 函数若存在，则 Vue 构造函数不会从 template 选项或通过 el 选项指定的挂载元素中提取出的 HTML 模板编译渲染函数。
