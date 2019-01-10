@@ -56,10 +56,12 @@ if (process.env.NODE_ENV !== 'production') {
   // 判断对象是否有某个属性
   const hasHandler = {
     has (target, key) {
+      // vm中是否有key属性
       const has = key in target
+      // 当key是全局变量或者key是私有属性且key没有在$data中，允许访问该key
       const isAllowed = allowedGlobals(key) ||
         (typeof key === 'string' && key.charAt(0) === '_' && !(key in target.$data))
-      // 没有该属性发起警告
+      // 没有该属性且不允许访问该属性时发起警告
       if (!has && !isAllowed) {
         if (key in target.$data) warnReservedPrefix(target, key)
         else warnNonPresent(target, key)

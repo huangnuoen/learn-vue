@@ -66,6 +66,7 @@ export default class VNode {
 
   // DEPRECATED: alias for componentInstance for backwards compat.
   /* istanbul ignore next */
+  // child属性拦截器
   get child (): Component | void {
     return this.componentInstance
   }
