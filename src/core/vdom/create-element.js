@@ -11,7 +11,7 @@ import {
   isUndef,
   isTrue,
   isObject,
-  isPrimitive,
+  isPrimitive,//检查是不是基础类型
   resolveAsset
 } from '../util/index'
 
@@ -35,7 +35,7 @@ export function createElement (
 ): VNode | Array<VNode> {
   // 参数判断，不传data时,要把children,normalizationType参数往前移
   if (Array.isArray(data) || isPrimitive(data)) {
-    normalizationType = children
+    normalizationType = children// 该值关系到后面children的扁平处理，没有children则不需要
     children = data
     data = undefined
   }

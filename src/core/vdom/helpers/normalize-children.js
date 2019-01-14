@@ -51,6 +51,7 @@ function normalizeArrayChildren (children: any, nestedIndex?: string): Array<VNo
   let i, c, lastIndex, last
   for (i = 0; i < children.length; i++) {
     c = children[i]
+    // c是空或者是布尔值 跳过
     if (isUndef(c) || typeof c === 'boolean') continue
     lastIndex = res.length - 1
     last = res[lastIndex]
