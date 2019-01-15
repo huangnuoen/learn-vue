@@ -83,4 +83,71 @@ __proto__: Object
 
 ### patch
 下面我们来看下这个`patch`方法
-- 传入参数`oldVnode(vm.$el真实dom), vnode, hydrating, removeOnly`
+- 传入参数`oldVnode(vm.$el真实dom), vnode(vm._render返回的vnode), hydrating, removeOnly`
+- 走`isUndef(oldVnode)`else逻辑
+- 判断oldVnode是否真实dom，走else逻辑
+- 
+```
+} else {
+  if (isRealElement) {
+    //略过服务端逻辑和isTrue(hydrating)逻辑..
+    // either not server-rendered, or hydration failed.
+    // create an empty node and replace it
+    // 把真实dom转换成vnode
+    oldVnode = emptyNodeAt(oldVnode)
+  }
+
+  // replacing existing element 替换掉现在的真实dom
+  const oldElm = oldVnode.elm
+  const parentElm = nodeOps.parentNode(oldElm)
+
+  // create new node 创建真实dom节点
+  createElm(
+    vnode,
+    insertedVnodeQueue,
+    // extremely rare edge case: do not insert if old element is in a
+    // leaving transition. Only happens when combining transition +
+    // keep-alive + HOCs. (#4590)
+    oldElm._leaveCb ? null : parentElm,
+    nodeOps.nextSibling(oldElm)
+  )
+
+  // update parent placeholder node element, recursively
+  if (isDef(vnode.parent)) {
+    let ancestor = vnode.parent
+    const patchable = isPatchable(vnode)
+    while (ancestor) {
+      for (let i = 0; i < cbs.destroy.length; ++i) {
+        cbs.destroy[i](ancestor)
+      }
+      ancestor.elm = vnode.elm
+      if (patchable) {
+        for (let i = 0; i < cbs.create.length; ++i) {
+          cbs.create[i](emptyNode, ancestor)
+        }
+        // #6513
+        // invoke insert hooks that may have been merged by create hooks.
+        // e.g. for directives that uses the "inserted" hook.
+        const insert = ancestor.data.hook.insert
+        if (insert.merged) {
+          // start at index 1 to avoid re-invoking component mounted hook
+          for (let i = 1; i < insert.fns.length; i++) {
+            insert.fns[i]()
+          }
+        }
+      } else {
+        registerRef(ancestor)
+      }
+      ancestor = ancestor.parent
+    }
+  }
+
+  // destroy old node
+  if (isDef(parentElm)) {
+    removeVnodes(parentElm, [oldVnode], 0, 0)
+  } else if (isDef(oldVnode.tag)) {
+    invokeDestroyHook(oldVnode)
+  }
+}
+
+```
