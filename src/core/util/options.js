@@ -256,7 +256,9 @@ function checkComponents (options: Object) {
   }
 }
 
+// 校验name
 export function validateComponentName (name: string) {
+  // 以字母开头，正常字符或连字符结尾的单词
   if (!/^[a-zA-Z][\w-]*$/.test(name)) {
     warn(
       'Invalid component name: "' + name + '". Component names ' +
@@ -264,6 +266,7 @@ export function validateComponentName (name: string) {
       'and must start with a letter.'
     )
   }
+  // 判断是否原生标签
   if (isBuiltInTag(name) || config.isReservedTag(name)) {
     warn(
       'Do not use built-in or reserved HTML elements as component ' +

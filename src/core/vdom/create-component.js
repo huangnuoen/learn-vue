@@ -108,12 +108,13 @@ export function createComponent (
   if (isUndef(Ctor)) {
     return
   }
-
+  // 基类构造器,baseCtor就是Vue
   const baseCtor = context.$options._base
 
   // plain options object: turn it into a constructor
+  // Ctor是对象的话就把它也转成构造器
   if (isObject(Ctor)) {
-    Ctor = baseCtor.extend(Ctor)
+    Ctor = baseCtor.extend(Ctor) // 变成子类构造器了
   }
 
   // if at this stage it's not a constructor or an async component factory,
@@ -148,6 +149,7 @@ export function createComponent (
 
   // resolve constructor options in case global mixins are applied after
   // component constructor creation
+  // 解决构造函数选项问题，防止组件构造器被全局mixins影响
   resolveConstructorOptions(Ctor)
 
   // transform component v-model data into props & events
@@ -187,6 +189,7 @@ export function createComponent (
 
   // return a placeholder vnode
   const name = Ctor.options.name || tag
+  // 组件vnode的children为空，componentOptions有值 
   const vnode = new VNode(
     `vue-component-${Ctor.cid}${name ? `-${name}` : ''}`,
     data, undefined, undefined, undefined, context,
@@ -228,19 +231,22 @@ function installComponentHooks (data: VNodeData) {
   for (let i = 0; i < hooksToMerge.length; i++) {
     const key = hooksToMerge[i]
     const existing = hooks[key]
-    const toMerge = componentVNodeHooks[key]
+    const toMerge = componentVNodeHooks[key]// 每个组件都有的hook
+    // data.hook没有合并过
     if (existing !== toMerge && !(existing && existing._merged)) {
+      // data.hook上的有的就合并，没有就用原生的
       hooks[key] = existing ? mergeHook(toMerge, existing) : toMerge
     }
   }
 }
-
+// 合并2个钩子方法，顺序执行f1,f2
 function mergeHook (f1: any, f2: any): Function {
   const merged = (a, b) => {
     // flow complains about extra args which is why we use any
     f1(a, b)
     f2(a, b)
   }
+  // 合并过标识
   merged._merged = true
   return merged
 }

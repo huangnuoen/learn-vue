@@ -54,3 +54,6 @@
 
 ## 组件化
 ### create-component
+### 为什么要定义子类构造器
+### vndoe
+### hook 
