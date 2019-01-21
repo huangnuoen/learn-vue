@@ -57,3 +57,10 @@
 ### 为什么要定义子类构造器
 ### vndoe
 ### hook 
+### 组件的patch
+1. 整体流程
+- 组件的构造器和普通页面的构造器有什么不一样
+2. activeInstance
+3. vm.$vnode
+4. vm._vnode
+5. 嵌套组件插入顺序

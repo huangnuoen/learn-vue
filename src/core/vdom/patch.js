@@ -139,6 +139,9 @@ export function createPatchFunction (backend) {
       // potential patch errors down the road when it's used as an insertion
       // reference node. Instead, we clone the node on-demand before creating
       // associated DOM element for it.
+      // 该vnode用于之前的渲染
+      // 现在它被用作新vnode,覆盖了它自己的dom，这可能导致当它插入参考节点时patch出错
+      // 我们可以在为它创建相关dom元素前按需复制节点
       vnode = ownerArray[index] = cloneVNode(vnode)
     }
 
@@ -215,6 +218,7 @@ export function createPatchFunction (backend) {
     let i = vnode.data
     if (isDef(i)) {
       const isReactivated = isDef(vnode.componentInstance) && i.keepAlive
+      // 拿到vnode.data.hook.init,并调用
       if (isDef(i = i.hook) && isDef(i = i.init)) {
         i(vnode, false /* hydrating */)
       }
