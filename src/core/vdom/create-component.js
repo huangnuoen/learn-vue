@@ -44,7 +44,7 @@ const componentVNodeHooks = {
       const mountedNode: any = vnode // work around flow
       componentVNodeHooks.prepatch(mountedNode, mountedNode)
     } else {
-      // 
+      // 初始化子组件时传入vnode,和当前正在激活的vm实例
       const child = vnode.componentInstance = createComponentInstanceForVnode(
         vnode,
         activeInstance

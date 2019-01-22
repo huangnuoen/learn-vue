@@ -74,13 +74,13 @@ export function initMixin (Vue: Class<Component>) {
     }
   }
 }
-
+// 初始化内部组件
 export function initInternalComponent (vm: Component, options: InternalComponentOptions) {
   // 使用构造函数的选项来提供opts和vm.$options的__proto__。
   const opts = vm.$options = Object.create(vm.constructor.options)
   // doing this because it's faster than dynamic enumeration.
-  const parentVnode = options._parentVnode
-  opts.parent = options.parent
+  const parentVnode = options._parentVnode// 占位符
+  opts.parent = options.parent// 当前vm实例，子组件的父级vm实例
   opts._parentVnode = parentVnode
 
   const vnodeComponentOptions = parentVnode.componentOptions

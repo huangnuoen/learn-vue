@@ -60,6 +60,7 @@
 ### 组件的patch
 1. 整体流程
 - 组件的构造器和普通页面的构造器有什么不一样
+- this._init()方法的不同
 2. activeInstance
 3. vm.$vnode
 4. vm._vnode
