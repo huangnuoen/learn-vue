@@ -70,9 +70,9 @@ export function renderMixin (Vue: Class<Component>) {
 
     // set parent vnode. this allows render functions to have access
     // to the data on the placeholder node.
-    vm.$vnode = _parentVnode // 占位
+    vm.$vnode = _parentVnode // 占位符vnode
     // render self
-    let vnode
+    let vnode // 渲染vnode
     try {
       // _renderProxy生产环境下是vm
       // 开发环境可能是proxy对象

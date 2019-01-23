@@ -62,6 +62,8 @@
 - 组件的构造器和普通页面的构造器有什么不一样
 - this._init()方法的不同
 2. activeInstance
-3. vm.$vnode
-4. vm._vnode
+3. vm.$vnode 占位 可以理解成
+app.vue、helloworld.vue的$vnode是<App>、<HelloWorld>
+4. vm._vnode 渲染
 5. 嵌套组件插入顺序
+6. createComponent(vnode, insertedVnodeQueue, parentElm, refElm)返回值和componentVNodeHooks.init有关->即是取决于_createElement时的tag有关

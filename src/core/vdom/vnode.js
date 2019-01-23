@@ -5,13 +5,13 @@ export default class VNode {
   data: VNodeData | void;
   children: ?Array<VNode>;
   text: string | void;
-  elm: Node | void;
+  elm: Node | void; // 真实dom
   ns: string | void;
   context: Component | void; // rendered in this component's scope
   key: string | number | void;
   componentOptions: VNodeComponentOptions | void;
   componentInstance: Component | void; // component instance
-  parent: VNode | void; // component placeholder node
+  parent: VNode | void; // component placeholder node 占位符节点
 
   // strictly internal
   raw: boolean; // contains raw HTML? (server only)

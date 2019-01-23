@@ -44,11 +44,12 @@ const componentVNodeHooks = {
       const mountedNode: any = vnode // work around flow
       componentVNodeHooks.prepatch(mountedNode, mountedNode)
     } else {
-      // 初始化子组件时传入vnode,和当前正在激活的vm实例
+      // 初始化子组件时传入vnode,和当前正在激活的vm实例,返回子组件实例
       const child = vnode.componentInstance = createComponentInstanceForVnode(
-        vnode,
-        activeInstance
+        vnode, // 要渲染的vnode
+        activeInstance // 当前vue实例作为父实例传入
       )
+      // 调用子组件实例方法$mount
       child.$mount(hydrating ? vnode.elm : undefined, hydrating)
     }
   },

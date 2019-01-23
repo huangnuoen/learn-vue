@@ -133,6 +133,7 @@ export function createPatchFunction (backend) {
     ownerArray,
     index
   ) {
+    // 存在vnode.elm
     if (isDef(vnode.elm) && isDef(ownerArray)) {
       // This vnode was used in a previous render!
       // now it's used as a new node, overwriting its elm would cause
@@ -145,7 +146,7 @@ export function createPatchFunction (backend) {
       vnode = ownerArray[index] = cloneVNode(vnode)
     }
 
-    vnode.isRootInsert = !nested // for transition enter check
+    vnode.isRootInsert = !nested // for transition enter check 添加根节点标志
     if (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) {
       return
     }
@@ -167,7 +168,7 @@ export function createPatchFunction (backend) {
           )
         }
       }
-
+      // 创建真实dom占位符
       vnode.elm = vnode.ns
         ? nodeOps.createElementNS(vnode.ns, tag)
         : nodeOps.createElement(tag, vnode)
@@ -721,6 +722,7 @@ export function createPatchFunction (backend) {
       isInitialPatch = true
       createElm(vnode, insertedVnodeQueue)
     } else {
+      // 判断oldVnode是否为真实节点
       const isRealElement = isDef(oldVnode.nodeType)
       if (!isRealElement && sameVnode(oldVnode, vnode)) {
         // patch existing root node
@@ -754,8 +756,8 @@ export function createPatchFunction (backend) {
         }
 
         // replacing existing element
-        const oldElm = oldVnode.elm
-        const parentElm = nodeOps.parentNode(oldElm)
+        const oldElm = oldVnode.elm // 要代替的节点
+        const parentElm = nodeOps.parentNode(oldElm) // 要代替的节点的父节点
 
         // create new node
         createElm(
