@@ -67,3 +67,5 @@ app.vue、helloworld.vue的$vnode是<App>、<HelloWorld>
 4. vm._vnode 渲染
 5. 嵌套组件插入顺序
 6. createComponent(vnode, insertedVnodeQueue, parentElm, refElm)返回值和componentVNodeHooks.init有关->即是取决于_createElement时的tag有关
+### mixin
+### 合并配置

@@ -110,7 +110,7 @@ export function mergeDataOrFn (
     }
   }
 }
-
+// data属性的合并策略
 strats.data = function (
   parentVal: any,
   childVal: any,
@@ -390,10 +390,12 @@ export function mergeOptions (
   // but only if it is a raw options object that isn't
   // the result of another mergeOptions call.
   // Only merged options has the _base property.
+  // 只有合并过的选项有_base属性
   if (!child._base) {
     if (child.extends) {
       parent = mergeOptions(parent, child.extends, vm)
     }
+    // 有mixins时，递归调用mergeOptions
     if (child.mixins) {
       for (let i = 0, l = child.mixins.length; i < l; i++) {
         parent = mergeOptions(parent, child.mixins[i], vm)
@@ -412,6 +414,7 @@ export function mergeOptions (
     }
   }
   function mergeField (key) {
+    // 不同的属性有不同的合并策略
     const strat = strats[key] || defaultStrat
     options[key] = strat(parent[key], child[key], vm, key)
   }
