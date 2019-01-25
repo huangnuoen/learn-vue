@@ -148,7 +148,7 @@ function mergeHook (
         : [childVal]
     : parentVal
 }
-
+// 钩子函数的合并是将2个方法合成数组 ，再依次执行（i guess）
 LIFECYCLE_HOOKS.forEach(hook => {
   strats[hook] = mergeHook
 })
@@ -242,6 +242,7 @@ strats.provide = mergeDataOrFn
  * Default strategy.
  */
 const defaultStrat = function (parentVal: any, childVal: any): any {
+  // 没有子值就用父
   return childVal === undefined
     ? parentVal
     : childVal
@@ -409,6 +410,7 @@ export function mergeOptions (
     mergeField(key)
   }
   for (key in child) {
+    // 父选项没有该key，则再执行一次mergeField(key)
     if (!hasOwn(parent, key)) {
       mergeField(key)
     }
