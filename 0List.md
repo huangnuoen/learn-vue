@@ -70,3 +70,10 @@ app.vue、helloworld.vue的$vnode是<App>、<HelloWorld>
 ### mixin
 ### 合并配置
 1. mergeField
+2. vue中传入自定义配置
+### 生命周期
+1. callHook
+2. 挂载时间：
+- _init时挂载beforecreate,created
+- mountComponent:beforeMount,
+- mounted：根节点是在

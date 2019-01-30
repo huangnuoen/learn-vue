@@ -371,8 +371,8 @@ function assertObjectType (name: string, value: any, vm: ?Component) {
  * Core utility used in both instantiation and inheritance.
  */
 export function mergeOptions (
-  parent: Object,
-  child: Object,
+  parent: Object,//Vue.options
+  child: Object,//vm.options
   vm?: Component
 ): Object {
   if (process.env.NODE_ENV !== 'production') {
