@@ -197,6 +197,7 @@ export function createPatchFunction (backend) {
         // 创建子节点
         createChildren(vnode, children, insertedVnodeQueue)
         if (isDef(data)) {
+          // 
           invokeCreateHooks(vnode, insertedVnodeQueue)
         }
         // 插入对应节点， 父节点，当前节点，参考节点
@@ -311,7 +312,7 @@ export function createPatchFunction (backend) {
     }
     return isDef(vnode.tag)
   }
-
+  // 调用create钩子
   function invokeCreateHooks (vnode, insertedVnodeQueue) {
     for (let i = 0; i < cbs.create.length; ++i) {
       cbs.create[i](emptyNode, vnode)
@@ -583,10 +584,11 @@ export function createPatchFunction (backend) {
       if (isDef(i = data.hook) && isDef(i = i.postpatch)) i(oldVnode, vnode)
     }
   }
-
+  // 调用插入钩子函数
   function invokeInsertHook (vnode, queue, initial) {
     // delay insert hooks for component root nodes, invoke them after the
     // element is really inserted
+    // 延迟组件节点钩子插入，在真正插入元素后再调用
     if (isTrue(initial) && isDef(vnode.parent)) {
       vnode.parent.data.pendingInsert = queue
     } else {

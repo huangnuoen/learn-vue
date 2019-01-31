@@ -75,5 +75,9 @@ app.vue、helloworld.vue的$vnode是<App>、<HelloWorld>
 1. callHook
 2. 挂载时间：
 - _init时挂载beforecreate,created
-- mountComponent:beforeMount,
-- mounted：根节点是在
+- mountComponent:beforeMount,先父后子
+- mounted：1 根节点挂载完成 2 子组件update-__patch__-生成insertedVnodeQueue-invokeInsertHook-componentVNodeHooks.insert-callHook(componentInstance, 'mounted')依次调用钩子，先子后父
+- beforeUpdate: watcher.before
+- update: watcher flushSchedulerQueue-callUpdatedHooks-callHook(vm, 'updated')
+- beforeDestroy: 在Vue.prototype.$destroy时，先父后子
+- destroyed: vm.__patch__(vm._vnode, null)-callHook(vm, 'destroyed')先子后父
