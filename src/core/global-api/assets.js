@@ -19,8 +19,10 @@ export function initAssetRegisters (Vue: GlobalAPI) {
         if (process.env.NODE_ENV !== 'production' && type === 'component') {
           validateComponentName(id)
         }
+        // 全局注册组件
         if (type === 'component' && isPlainObject(definition)) {
           definition.name = definition.name || id
+          // 用Vue.extend把定义转换成子构造器
           definition = this.options._base.extend(definition)
         }
         if (type === 'directive' && typeof definition === 'function') {

@@ -81,3 +81,6 @@ app.vue、helloworld.vue的$vnode是<App>、<HelloWorld>
 - update: watcher flushSchedulerQueue-callUpdatedHooks-callHook(vm, 'updated')
 - beforeDestroy: 在Vue.prototype.$destroy时，先父后子
 - destroyed: vm.__patch__(vm._vnode, null)-callHook(vm, 'destroyed')先子后父
+
+### 组件注册
+1. 全局注册
