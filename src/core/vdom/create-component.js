@@ -130,6 +130,7 @@ export function createComponent (
 
   // async component
   let asyncFactory
+  // 异步组件逻辑
   if (isUndef(Ctor.cid)) {
     asyncFactory = Ctor
     Ctor = resolveAsyncComponent(asyncFactory, baseCtor, context)

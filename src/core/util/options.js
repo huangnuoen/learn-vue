@@ -174,7 +174,7 @@ function mergeAssets (
     return res
   }
 }
-
+// 静态类型合并策略 
 ASSET_TYPES.forEach(function (type) {
   strats[type + 's'] = mergeAssets
 })
