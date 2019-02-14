@@ -85,3 +85,6 @@ app.vue、helloworld.vue的$vnode是<App>、<HelloWorld>
 ### 组件注册
 1. 全局注册
 2. 异步组件的加载
+2.1. 工厂
+2.2. promise
+2.3. 高级用法

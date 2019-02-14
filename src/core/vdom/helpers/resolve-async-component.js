@@ -98,14 +98,15 @@ export function resolveAsyncComponent (
     })
     // 执行工厂函数(通过webpack异步require)
     const res = factory(resolve, reject)// require结束执行resolve
-
+    // 工厂函数是promise写法时，返回的是一个promise对象，会走这个流程
     if (isObject(res)) {
       if (typeof res.then === 'function') {
         // () => Promise
         if (isUndef(factory.resolved)) {
+          // 第一次加载会执行then()，加载完会执行resolve
           res.then(resolve, reject)
         }
-      } else if (isDef(res.component) && typeof res.component.then === 'function') {
+      } else if (isDef(res.component) && typeof res.component.then === 'function') {// 高级用法
         res.component.then(resolve, reject)
 
         if (isDef(res.error)) {
@@ -114,9 +115,12 @@ export function resolveAsyncComponent (
 
         if (isDef(res.loading)) {
           factory.loadingComp = ensureCtor(res.loading, baseCtor)
+          // 为0时直接渲染loading组件
           if (res.delay === 0) {
             factory.loading = true
           } else {
+            // 设置延时：200ms后组件还没加载完且没报错则渲染loading,重新触发渲染
+            // forceRender->$forceUpdate->create-component->
             setTimeout(() => {
               if (isUndef(factory.resolved) && isUndef(factory.error)) {
                 factory.loading = true
@@ -142,7 +146,7 @@ export function resolveAsyncComponent (
     // 执行工厂函数后设为false
     sync = false
     // return in case resolved synchronously
-    // 同步先返回undefined
+    // 同步先返回undefined，有loading时先渲染loading
     return factory.loading
       ? factory.loadingComp
       : factory.resolved
