@@ -11,7 +11,7 @@ import {
 } from 'core/util/index'
 
 import { createEmptyVNode } from 'core/vdom/vnode'
-
+// 确保res是构造器
 function ensureCtor (comp: any, base) {
   if (
     comp.__esModule ||
@@ -19,6 +19,7 @@ function ensureCtor (comp: any, base) {
   ) {
     comp = comp.default
   }
+  // comp是对象则用base转换成构造器
   return isObject(comp)
     ? base.extend(comp)
     : comp
@@ -45,7 +46,7 @@ export function resolveAsyncComponent (
   if (isTrue(factory.error) && isDef(factory.errorComp)) {
     return factory.errorComp
   }
-
+  // 函数已经执行过，直接返回
   if (isDef(factory.resolved)) {
     return factory.resolved
   }
@@ -53,30 +54,34 @@ export function resolveAsyncComponent (
   if (isTrue(factory.loading) && isDef(factory.loadingComp)) {
     return factory.loadingComp
   }
-
+  // 已经有过pending
   if (isDef(factory.contexts)) {
     // already pending
     factory.contexts.push(context)
   } else {
+    // 首次pend
+    // 缓存传入的实例
     const contexts = factory.contexts = [context]
     let sync = true
 
     const forceRender = (renderCompleted: boolean) => {
+      // 遍历所有contexts,执行每个实例的update
       for (let i = 0, l = contexts.length; i < l; i++) {
-        contexts[i].$forceUpdate()
+        contexts[i].$forceUpdate()// 会再次触发createcomponent
       }
 
       if (renderCompleted) {
         contexts.length = 0
       }
     }
-
-    const resolve = once((res: Object | Class<Component>) => {
+    // 通过once方法对传入的resolve作一层封装，确保resolve只会执行一次
+    const resolve = once((res: Object | Class<Component>) => { // res是require返回值
       // cache resolved
-      factory.resolved = ensureCtor(res, baseCtor)
+      factory.resolved = ensureCtor(res, baseCtor)// 异步组件构造器
       // invoke callbacks only if this is not a synchronous resolve
       // (async resolves are shimmed as synchronous during SSR)
-      if (!sync) {
+      // 只在非同步才执行回调
+      if (!sync) { // sync=false
         forceRender(true)
       }
     })
@@ -91,8 +96,8 @@ export function resolveAsyncComponent (
         forceRender(true)
       }
     })
-
-    const res = factory(resolve, reject)
+    // 执行工厂函数(通过webpack异步require)
+    const res = factory(resolve, reject)// require结束执行resolve
 
     if (isObject(res)) {
       if (typeof res.then === 'function') {
@@ -134,9 +139,10 @@ export function resolveAsyncComponent (
         }
       }
     }
-
+    // 执行工厂函数后设为false
     sync = false
     // return in case resolved synchronously
+    // 同步先返回undefined
     return factory.loading
       ? factory.loadingComp
       : factory.resolved

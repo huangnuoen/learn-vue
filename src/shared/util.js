@@ -322,10 +322,11 @@ export function looseIndexOf (arr: Array<mixed>, val: mixed): number {
 }
 
 /**
- * Ensure a function is called only once.
+ * Ensure a function is called only once.确保函数只执行一次
  */
 export function once (fn: Function): Function {
   let called = false
+  // 闭包，函数可以访问到called变量
   return function () {
     if (!called) {
       called = true
