@@ -84,7 +84,14 @@ app.vue、helloworld.vue的$vnode是<App>、<HelloWorld>
 
 ### 组件注册
 1. 全局注册
-2. 异步组件的加载
+2. 异步组件的加载 
+先渲染注释节点，加载完再渲染组件
+resolveAsyncComponent方法包含了3种方式的加载，有些很有用的技巧
 2.1. 工厂
 2.2. promise
 2.3. 高级用法
+
+### 响应式原理
+1. Object.defineProperty(obj, prop, descriptor)
+2. props
+3. data

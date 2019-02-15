@@ -43,6 +43,7 @@ export function resolveAsyncComponent (
   baseCtor: Class<Component>,
   context: Component
 ): Class<Component> | void {
+  // 有报错，返回报错组件
   if (isTrue(factory.error) && isDef(factory.errorComp)) {
     return factory.errorComp
   }
@@ -50,7 +51,7 @@ export function resolveAsyncComponent (
   if (isDef(factory.resolved)) {
     return factory.resolved
   }
-
+  // 有loading,直接渲染loading
   if (isTrue(factory.loading) && isDef(factory.loadingComp)) {
     return factory.loadingComp
   }
@@ -120,10 +121,10 @@ export function resolveAsyncComponent (
             factory.loading = true
           } else {
             // 设置延时：200ms后组件还没加载完且没报错则渲染loading,重新触发渲染
-            // forceRender->$forceUpdate->create-component->
             setTimeout(() => {
               if (isUndef(factory.resolved) && isUndef(factory.error)) {
                 factory.loading = true
+                // forceRender->$forceUpdate->create-component->resolveAsyncComponent->渲染loading
                 forceRender(false)
               }
             }, res.delay || 200)
@@ -132,6 +133,7 @@ export function resolveAsyncComponent (
 
         if (isDef(res.timeout)) {
           setTimeout(() => {
+            // timeout结束后还没加载好则报错
             if (isUndef(factory.resolved)) {
               reject(
                 process.env.NODE_ENV !== 'production'

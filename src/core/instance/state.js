@@ -68,8 +68,9 @@ function initProps (vm: Component, propsOptions: Object) {
   // instead of dynamic object key enumeration.
   const keys = vm.$options._propKeys = []
   const isRoot = !vm.$parent
-  // root instance props should be converted
+  // root instance props should be converted 
   if (!isRoot) {
+    // 非根节点上的属性不追踪
     toggleObserving(false)
   }
   for (const key in propsOptions) {
