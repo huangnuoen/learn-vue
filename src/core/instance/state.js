@@ -86,6 +86,7 @@ function initProps (vm: Component, propsOptions: Object) {
           vm
         )
       }
+      // 把props.key变成响应式的
       defineReactive(props, key, value, () => {
         if (!isRoot && !isUpdatingChildComponent) {
           warn(
@@ -129,6 +130,7 @@ function initData (vm: Component) {
   const props = vm.$options.props
   const methods = vm.$options.methods
   let i = keys.length
+  // 检查data.key是否重复
   while (i--) {
     const key = keys[i]
     if (process.env.NODE_ENV !== 'production') {
@@ -146,6 +148,7 @@ function initData (vm: Component) {
         vm
       )
     } else if (!isReserved(key)) {
+      // 把_data代理到vm实例上
       proxy(vm, `_data`, key)
     }
   }
