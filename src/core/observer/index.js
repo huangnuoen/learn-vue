@@ -43,7 +43,7 @@ export class Observer {
     this.value = value
     this.dep = new Dep()
     this.vmCount = 0
-    def(value, '__ob__', this)
+    def(value, '__ob__', this)//->data.__ob__=observer 设为不可枚举
     if (Array.isArray(value)) {
       if (hasProto) {
         protoAugment(value, arrayMethods)
@@ -108,19 +108,20 @@ function copyAugment (target: Object, src: Object, keys: Array<string>) {
  * or the existing observer if the value already has one.
  */
 export function observe (value: any, asRootData: ?boolean): Observer | void {
-  // value必须是对象且不是vnode
+  // value必须是对象且不是vnode实例
   if (!isObject(value) || value instanceof VNode) {
     return
   }
   let ob: Observer | void
+  // data已经有__ob__属性 且是observer实例则直接取该值
   if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
     ob = value.__ob__
   } else if (
     shouldObserve &&
-    !isServerRendering() &&
+    !isServerRendering() &&//非服务端渲染
     (Array.isArray(value) || isPlainObject(value)) &&
     Object.isExtensible(value) &&
-    !value._isVue
+    !value._isVue// 不是vue
   ) {
     ob = new Observer(value)
   }
@@ -150,16 +151,19 @@ export function defineReactive (
   // cater for pre-defined getter/setters
   const getter = property && property.get
   const setter = property && property.set
+  // 没有getter或者有setter并且没有传入初始化值
   if ((!getter || setter) && arguments.length === 2) {
     val = obj[key]
   }
 
+  // 对子值调用observe
   let childOb = !shallow && observe(val)
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
     get: function reactiveGetter () {
       const value = getter ? getter.call(obj) : val
+      // 依赖收集过程
       if (Dep.target) {
         dep.depend()
         if (childOb) {

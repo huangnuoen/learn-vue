@@ -16,8 +16,8 @@ export default class Dep {
   subs: Array<Watcher>;
 
   constructor () {
-    this.id = uid++
-    this.subs = []
+    this.id = uid++// 每创建个dep 加1
+    this.subs = []// 订阅watcher
   }
 
   addSub (sub: Watcher) {
@@ -52,9 +52,11 @@ export default class Dep {
 // The current target watcher being evaluated.
 // This is globally unique because only one watcher
 // can be evaluated at a time.
+// 同一时间只有一个watcher
 Dep.target = null
 const targetStack = []
 
+// 把当前target(Watcher)赋给Dep
 export function pushTarget (target: ?Watcher) {
   targetStack.push(target)
   Dep.target = target

@@ -92,6 +92,10 @@ resolveAsyncComponent方法包含了3种方式的加载，有些很有用的技�
 2.3. 高级用法
 
 ### 响应式原理
-1. Object.defineProperty(obj, prop, descriptor)
+1. Object.defineProperty(obj, prop, descriptor) 添加getter/setter
 2. props
 3. data
+4. 递归data,对子属性也进行响应式处理
+5. 依赖收集 
+- 触发getter->Dep.target->dep.depend()
+- ->Dep.target.addDep(this)->this.newDepIds.add(id)->dep.addSub(this)

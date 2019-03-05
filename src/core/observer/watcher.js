@@ -102,7 +102,7 @@ export default class Watcher {
    * Evaluate the getter, and re-collect dependencies.
    */
   get () {
-    pushTarget(this)
+    pushTarget(this)//把当前watcher设为Dep.target
     let value
     const vm = this.vm
     try {
