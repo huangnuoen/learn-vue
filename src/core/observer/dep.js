@@ -19,7 +19,7 @@ export default class Dep {
     this.id = uid++// 每创建个dep 加1
     this.subs = []// 订阅watcher
   }
-
+  // 添加新订阅者
   addSub (sub: Watcher) {
     this.subs.push(sub)
   }
@@ -30,7 +30,7 @@ export default class Dep {
 
   depend () {
     if (Dep.target) {
-      Dep.target.addDep(this)
+      Dep.target.addDep(this)// 调用watcher.addDep()添加依赖
     }
   }
 

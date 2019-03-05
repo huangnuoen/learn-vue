@@ -141,6 +141,7 @@ export function defineReactive (
   customSetter?: ?Function,
   shallow?: boolean
 ) {
+  // 每个Key都会实例化一个Dep
   const dep = new Dep()
 
   const property = Object.getOwnPropertyDescriptor(obj, key)
@@ -156,16 +157,17 @@ export function defineReactive (
     val = obj[key]
   }
 
-  // 对子值调用observe
+  // 对子值递归调用observe
   let childOb = !shallow && observe(val)
+  // 定义每个key的属性描述符
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
     get: function reactiveGetter () {
       const value = getter ? getter.call(obj) : val
       // 依赖收集过程
-      if (Dep.target) {
-        dep.depend()
+      if (Dep.target) {//通过watcher触发的getter才收集依赖
+        dep.depend()//把当前watcher收集起来
         if (childOb) {
           childOb.dep.depend()
           if (Array.isArray(value)) {

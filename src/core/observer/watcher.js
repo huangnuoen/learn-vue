@@ -130,9 +130,11 @@ export default class Watcher {
    */
   addDep (dep: Dep) {
     const id = dep.id
+    // 判断是否已经有这个依赖
     if (!this.newDepIds.has(id)) {
-      this.newDepIds.add(id)
-      this.newDeps.push(dep)
+      this.newDepIds.add(id)//添加新依赖id
+      this.newDeps.push(dep)//添加新依赖
+      // 旧依赖中没有这个依赖时，添加当前watcher到dep.subs
       if (!this.depIds.has(id)) {
         dep.addSub(this)
       }
@@ -146,6 +148,7 @@ export default class Watcher {
     let i = this.deps.length
     while (i--) {
       const dep = this.deps[i]
+      // 删除dep中有，newdep中没有的dep的subs中的当前watcher
       if (!this.newDepIds.has(dep.id)) {
         dep.removeSub(this)
       }
