@@ -99,7 +99,7 @@ resolveAsyncComponent方法包含了3种方式的加载，有些很有用的技�
 5. 依赖收集  只对有用到的数据派发更新
 6. defineReactive
 - new Dep() 每个key
-7. 触发getter->Dep.target->dep.depend()
+7. render时会访问vm.data->触发getter->Dep.target->dep.depend()
 - ->Dep.target.addDep(this)->this.newDepIds.add(id)->dep.addSub(this)
 -  new Watcher 
 -> this.get()

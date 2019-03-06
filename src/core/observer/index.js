@@ -195,6 +195,7 @@ export function defineReactive (
         val = newVal
       }
       childOb = !shallow && observe(newVal)
+      // 派发更新
       dep.notify()
     }
   })

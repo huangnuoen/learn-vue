@@ -34,6 +34,7 @@ function resetSchedulerState () {
 
 /**
  * Flush both queues and run the watchers.
+ * 执行watcher队列里的watcher
  */
 function flushSchedulerQueue () {
   flushing = true
@@ -41,16 +42,20 @@ function flushSchedulerQueue () {
 
   // Sort queue before flush.
   // This ensures that:
-  // 1. Components are updated from parent to child. (because parent is always
+  // 1. Components are updated from parent to child. (because parent is always 
   //    created before the child)
   // 2. A component's user watchers are run before its render watcher (because
   //    user watchers are created before the render watcher)
   // 3. If a component is destroyed during a parent component's watcher run,
   //    its watchers can be skipped.
-  queue.sort((a, b) => a.id - b.id)
+  // 组件从父到子进行更新；
+  // 确保用户创建的watcher在它的渲染watcher前运行，因为用户watcher在渲染watcher前创建；
+  // 如果子组件在父组件运行期间被销毁，它的订阅者会被跳过
+  queue.sort((a, b) => a.id - b.id)//升序
 
   // do not cache length because more watchers might be pushed
   // as we run existing watchers
+  // 不能缓存queue.length，因为运行watcher期间可能又会有watcher加入，要实时拿quene.length
   for (index = 0; index < queue.length; index++) {
     watcher = queue[index]
     if (watcher.before) {
@@ -58,8 +63,9 @@ function flushSchedulerQueue () {
     }
     id = watcher.id
     has[id] = null
+    // run时可能会有watcher产生
     watcher.run()
-    // in dev build, check and stop circular updates.
+    // in dev build, check and stop circular updates.检查是否会循环更新
     if (process.env.NODE_ENV !== 'production' && has[id] != null) {
       circular[id] = (circular[id] || 0) + 1
       if (circular[id] > MAX_UPDATE_COUNT) {
@@ -127,6 +133,7 @@ function callActivatedHooks (queue) {
  * Push a watcher into the watcher queue.
  * Jobs with duplicate IDs will be skipped unless it's
  * pushed when the queue is being flushed.
+ * 跳过重复id的watcher
  */
 export function queueWatcher (watcher: Watcher) {
   const id = watcher.id

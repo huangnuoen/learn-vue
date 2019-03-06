@@ -143,6 +143,8 @@ export default class Watcher {
 
   /**
    * Clean up for dependency collection.
+   * 性能优化，遍历新依赖，删除旧依赖的订阅者watcher
+   * 当数据更新时没有订阅watcher则不会触发update
    */
   cleanupDeps () {
     let i = this.deps.length
@@ -153,6 +155,7 @@ export default class Watcher {
         dep.removeSub(this)
       }
     }
+    // 存储newdeps到deps中
     let tmp = this.depIds
     this.depIds = this.newDepIds
     this.newDepIds = tmp
@@ -169,9 +172,9 @@ export default class Watcher {
    */
   update () {
     /* istanbul ignore else */
-    if (this.lazy) {
+    if (this.lazy) {//
       this.dirty = true
-    } else if (this.sync) {
+    } else if (this.sync) {//同步watcher
       this.run()
     } else {
       queueWatcher(this)
