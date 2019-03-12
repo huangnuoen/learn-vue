@@ -106,7 +106,7 @@ export default class Watcher {
     let value
     const vm = this.vm
     try {
-      value = this.getter.call(vm, vm)
+      value = this.getter.call(vm, vm)//updatecomponent
     } catch (e) {
       if (this.user) {
         handleError(e, vm, `getter for watcher "${this.expression}"`)
@@ -187,7 +187,7 @@ export default class Watcher {
    */
   run () {
     if (this.active) {
-      const value = this.get()
+      const value = this.get()//关键
       if (
         value !== this.value ||
         // Deep watchers and watchers on Object/Arrays should fire even
@@ -199,6 +199,7 @@ export default class Watcher {
         // set new value
         const oldValue = this.value
         this.value = value
+        // user.watcher
         if (this.user) {
           try {
             this.cb.call(this.vm, value, oldValue)
@@ -206,6 +207,7 @@ export default class Watcher {
             handleError(e, this.vm, `callback for watcher "${this.expression}"`)
           }
         } else {
+          // watcher的回调，传入vm，新值，旧值，例子中cb为noop
           this.cb.call(this.vm, value, oldValue)
         }
       }
