@@ -21,9 +21,7 @@ export default class Dep {
   }
   // 添加新订阅者
   addSub (sub: Watcher) {
-    
-  
-  
+    this.subs.push(sub)
   }
 
   removeSub (sub: Watcher) {

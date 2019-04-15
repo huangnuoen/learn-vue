@@ -2,7 +2,7 @@
 
 ## `vm._render` 生成虚拟dom
 我们知道在挂载过程中， `$mount` 会调用 `vm._update和vm._render` 方法，`vm._updata`是负责把VNode渲染成真正的DOM，`vm._render`方法是用来把实例渲染成VNode，这里的`_render`是实例的私有方法，和前面我们说的`vm.render`不是同一个，先来看下`vm._render`定义,`vm._render`是通过`renderMixin(Vue)`挂载的，定义在`src/core/instance/render.js `：
-```
+```javascript {.line-numbers}
 // 简化版本
 Vue.prototype._render = function (): VNode {
   const vm: Component = this
@@ -35,7 +35,7 @@ Vue.prototype._render = function (): VNode {
 
 ### vm._renderProxy
 首先来看下`vm._renderProxy`，`vm._renderProxy`是在`_init()`中挂载的:
-```
+```javascript {.line-numbers}
 Vue.prototype._init = function (options?: Object) {
   ...
   if (process.env.NODE_ENV !== 'production') {
@@ -48,7 +48,7 @@ Vue.prototype._init = function (options?: Object) {
 }
 ```
 如果是生产环境，`vm._renderProxy`直接就是`vm`;开发环境下，执行`initProxy(vm)`,找到定义：
-```
+```javascript {.line-numbers}
 initProxy = function initProxy (vm) {
   if (hasProxy) {
     // determine which proxy handler to use
@@ -64,7 +64,7 @@ initProxy = function initProxy (vm) {
 }
 ```
 先判断当前是否支持`Proxy`(ES6新语法)，支持的话会实例化一个[Proxy](http://es6.ruanyifeng.com/#docs/proxy), 当前例子用的是hasHandler(只要判断是否vm上有无属性即可)，这样每次通过vm._renderProxy访问vm时，都必须经过这层代理:
-```
+```javascript {.line-numbers}
 // 判断对象是否有某个属性
 const hasHandler = {
   has (target, key) {
@@ -92,7 +92,7 @@ const hasHandler = {
 
 ## `vm.$createElement`
 vue文档中介绍了render函数,第一个参数就是`createElement`,之前的例子转换成`render`函数就是：
-```
+```javascript {.line-numbers}
 <div id="app">
   {{ message }}
 </div>
@@ -108,7 +108,7 @@ render: function (createElement) {
 可以看出，`createElement`就是`vm.$createElement`
 
 找到`vm.$createElement`定义，在`initRender`方法中，
-```
+```javascript {.line-numbers}
 // bind the createElement fn to this instance
 // so that we get proper render context inside it.
 // args order: tag, data, children, normalizationType, alwaysNormalize
@@ -119,7 +119,7 @@ vm._c = (a, b, c, d) => createElement(vm, a, b, c, d, false)
 vm.$createElement = (a, b, c, d) => createElement(vm, a, b, c, d, true)
 ```
 看到这里定义了2个实例方法都是调用的`createElement`，一个是用于编译生成的`render`方法,一个是用于手写`render`方法,`createElement`最后会返回`Vnode`，来看下`createElement`的定义：
-```
+```javascript {.line-numbers}
 export function createElement (
   context: Component, //vm实例
   tag: any,
@@ -145,7 +145,7 @@ export function createElement (
 ### _createElement()
 
 1. 首先校验`data`,`data`是响应式的，调用`createEmptyVNode`直接返回注释节点:
-```
+```javascript {.line-numbers}
 export const createEmptyVNode = (text: string = '') => {
   const node = new VNode()
   node.text = text
@@ -161,7 +161,7 @@ export const createEmptyVNode = (text: string = '') => {
 
 #### simpleNormalizeChildren
 `normalizeChildren`和`simpleNormalizeChildren`是2种对`children`扁平化处理的方法，先来看下`simpleNormalizeChildren`定义：
-```
+```javascript {.line-numbers}
 export function simpleNormalizeChildren (children: any) {
   for (let i = 0; i < children.length; i++) {
     // 把嵌套数组拍平成一维数组
@@ -175,7 +175,7 @@ export function simpleNormalizeChildren (children: any) {
 如果`children`中有一个是数组则将整个`children`作为参数组用`concat`连接，可以得到每个子元素都是`vnode`的`children`,这适用于只有一级嵌套数组的情况
 
 #### normalizeChildren
-```
+```javascript {.line-numbers}
 export function normalizeChildren (children: any): ?Array<VNode> {
   // 判断是否基础类型，是：创建文本节点，否：判断是否数组，是：作normalizeArrayChildren处理
   return isPrimitive(children)
@@ -192,7 +192,7 @@ export function normalizeChildren (children: any): ?Array<VNode> {
 - 定义res
 - 遍历children，当`children[i]`是空或者是布尔值,跳过该次循环
 - 如果`children[i]`还是个数组，再对`children[i]`作`normalizeArrayChildren`处理
-  ```
+  ```javascript {.line-numbers}
   if (Array.isArray(c)) {
     if (c.length > 0) {
       c = normalizeArrayChildren(c, `${nestedIndex || ''}_${i}`)// 返回vnode数组
@@ -207,7 +207,7 @@ export function normalizeChildren (children: any): ?Array<VNode> {
   } else if (){...}
   ```
 - children[i]是基础类型时
-  ```
+  ```javascript {.line-numbers}
   } else if (isPrimitive(c)) {
     // 当c是基础类型时
     // children上一次处理的vnode是文本节点，则合并成一个文本节点
@@ -224,7 +224,7 @@ export function normalizeChildren (children: any): ?Array<VNode> {
   } else {
   ```
 - 其它情况，`children[i]`是`vnode`时，
-  ```
+  ```javascript {.line-numbers}
   } else {// 当c是vnode时
     if (isTextNode(c) && isTextNode(last)) {
       // merge adjacent text nodes
@@ -250,7 +250,7 @@ export function normalizeChildren (children: any): ?Array<VNode> {
 6. 创建`vnode`,并返回
 
 - 判断`tag`类型，为字符串时：
-  ```
+  ```javascript {.line-numbers}
   let Ctor
   ns = (context.$vnode && context.$vnode.ns) || config.getTagNamespace(tag)
   // 判断tag是否是原生标签

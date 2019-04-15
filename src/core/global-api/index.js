@@ -43,7 +43,7 @@ export function initGlobalAPI (Vue: GlobalAPI) {
 
   Vue.set = set
   Vue.delete = del
-  Vue.nextTick = nextTick
+  Vue.nextTick = nextTick// 静态方法
 
   Vue.options = Object.create(null)
   ASSET_TYPES.forEach(type => {

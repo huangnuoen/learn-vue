@@ -187,6 +187,7 @@ export default class Watcher {
    */
   run () {
     if (this.active) {
+      // this.get()-render()触发重新渲染
       const value = this.get()//关键
       if (
         value !== this.value ||
