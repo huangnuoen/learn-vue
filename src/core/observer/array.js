@@ -1,6 +1,7 @@
 /*
  * not type checking this file because flow doesn't play well with
  * dynamically accessing methods on Array prototype
+ * 修改数组原生方法
  */
 
 import { def } from '../util/index'
@@ -38,7 +39,7 @@ methodsToPatch.forEach(function (method) {
         break
     }
     if (inserted) ob.observeArray(inserted)
-    // notify change
+    // notify change 所以用数组原生方法修改data也会触发更新
     ob.dep.notify()
     return result
   })

@@ -44,7 +44,9 @@ export class Observer {
     this.dep = new Dep()
     this.vmCount = 0
     def(value, '__ob__', this)//->data.__ob__=observer 设为不可枚举
+    // data是数组时
     if (Array.isArray(value)) {
+      // 重写原型方法
       if (hasProto) {
         protoAugment(value, arrayMethods)
       } else {
@@ -83,6 +85,7 @@ export class Observer {
 /**
  * Augment a target Object or Array by intercepting
  * the prototype chain using __proto__
+ * 把原型链指向src
  */
 function protoAugment (target, src: Object) {
   /* eslint-disable no-proto */
@@ -207,32 +210,39 @@ export function defineReactive (
  * already exist.
  */
 export function set (target: Array<any> | Object, key: any, val: any): any {
+  // 对target进行判断
   if (process.env.NODE_ENV !== 'production' &&
     (isUndef(target) || isPrimitive(target))
   ) {
     warn(`Cannot set reactive property on undefined, null, or primitive value: ${(target: any)}`)
   }
+  // 判断索引
   if (Array.isArray(target) && isValidArrayIndex(key)) {
+    // 修改数组长度
     target.length = Math.max(target.length, key)
     target.splice(key, 1, val)
     return val
   }
+  // key存在可以直接赋值并触发更新
   if (key in target && !(key in Object.prototype)) {
     target[key] = val
     return val
   }
   const ob = (target: any).__ob__
   if (target._isVue || (ob && ob.vmCount)) {
+    // 不能对根data作set处理
     process.env.NODE_ENV !== 'production' && warn(
       'Avoid adding reactive properties to a Vue instance or its root $data ' +
       'at runtime - declare it upfront in the data option.'
     )
     return val
   }
+  // target不是响应对象时，直接对target赋值
   if (!ob) {
     target[key] = val
     return val
   }
+  // 对ob.value作响应式处理
   defineReactive(ob.value, key, val)
   ob.dep.notify()
   return val

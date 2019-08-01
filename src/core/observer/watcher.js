@@ -93,6 +93,7 @@ export default class Watcher {
         )
       }
     }
+    // computed属性的话不会执行this.get
     this.value = this.lazy
       ? undefined
       : this.get()
